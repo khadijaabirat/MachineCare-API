@@ -19,5 +19,18 @@ const UserSchema = new mongoose.Schema({
         minlength: [6, 'le mot de passe doit contenir au mois 6 caractaires']
     }
 }, { timestamps: true });
+const bcrypt = require('bcryptjs');
+UserSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) {
+        return next();
+    }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+});
+
+UserSchema.methods.comparePassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password)
+};
 const User = mongoose.model('User', UserSchema);
 module.exports = User;
