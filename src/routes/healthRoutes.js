@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { checkHealth } = require('../controllers/healthController');
+const healthController = require('../controllers/healthController');
 
 /**
  * @route   GET /api/health
- * @desc    Vérifier l'état de l'API
+ * @desc    Verification de l'etat de sante de l'API
  * @access  Public
  */
-router.get('/', checkHealth);
+router.get('/', healthController.getHealth);
 
 module.exports = router;
