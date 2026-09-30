@@ -1,25 +1,20 @@
 const express = require('express');
 const cors = require('cors');
 
-// Import routes
-const healthRoutes = require('./routes/healthRoutes');
-
 const app = express();
 
-// Middlewares globaux
+// Middlewares obligatoires
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Declaration des routes de base
-app.use('/api/health', healthRoutes);
-
-// Route par defaut pour routes non trouvees (404)
-app.use((req, res, next) => {
-  res.status(404).json({
-    success: false,
-    message: `Route ${req.originalUrl} introuvable sur ce serveur`
-  });
+// Message de bienvenue sur la racine de l'API
+app.get('/', (req, res) => {
+  res.json({ message: "Bienvenue sur l'API MachineCare" });
 });
+
+// Les routes demandees par le cahier des charges seront branchees ici :
+// - Authentification : /api/auth
+// - Machines : /api/machines
+// - Signalements : /api/signalements
 
 module.exports = app;
