@@ -24,13 +24,11 @@ const loginUser = async (email, password) => {
 
 // 2. Service de creation d'utilisateur (Register)
 const registerUser = async (name, email, password) => {
-  // Verifier si l'email existe deja
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new Error('Cet email est deja utilise');
   }
 
-  // Creer le nouvel utilisateur (le pre-save hook va hacher le mot de passe automatiquement)
   const user = await User.create({
     name,
     email,
@@ -40,7 +38,36 @@ const registerUser = async (name, email, password) => {
   return user;
 };
 
+// 3. Service de mise a jour du profil
+const updateProfile = async (userId, updates) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error('Utilisateur introuvable');
+  }
+
+  // Verifier l'unicite du nouvel email s'il change
+  if (updates.email && updates.email !== user.email) {
+    const emailExist = await User.findOne({ email: updates.email });
+    if (emailExist) {
+      throw new Error('Cet email est deja utilise');
+    }
+    user.email = updates.email;
+  }
+
+  if (updates.name) {
+    user.name = updates.name;
+  }
+
+  if (updates.password) {
+    user.password = updates.password;
+  }
+
+  await user.save();
+  return user;
+};
+
 module.exports = {
   loginUser,
-  registerUser
+  registerUser,
+  updateProfile
 };

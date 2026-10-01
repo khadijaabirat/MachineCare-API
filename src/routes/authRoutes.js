@@ -6,7 +6,9 @@ const authMiddleware = require('../middlewares/authMiddleware');
 // Route publique : Connexion
 router.post('/login', authController.login);
 
-// Route protegee par JWT : Creation d'un nouvel utilisateur
+// Routes protegees par JWT :
 router.post('/register', authMiddleware, authController.register);
+router.get('/profile', authMiddleware, authController.getProfile);
+router.put('/profile', authMiddleware, authController.updateProfile);
 
 module.exports = router;
