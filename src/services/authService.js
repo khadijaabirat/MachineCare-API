@@ -22,19 +22,14 @@ const loginUser = async (email, password) => {
   return { user, token };
 };
 
-// 2. Service de creation d'utilisateur (Register)
+// 2. Service de creation d'utilisateur
 const registerUser = async (name, email, password) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     throw new Error('Cet email est deja utilise');
   }
 
-  const user = await User.create({
-    name,
-    email,
-    password
-  });
-
+  const user = await User.create({ name, email, password });
   return user;
 };
 
@@ -45,7 +40,6 @@ const updateProfile = async (userId, updates) => {
     throw new Error('Utilisateur introuvable');
   }
 
-  // Verifier l'unicite du nouvel email s'il change
   if (updates.email && updates.email !== user.email) {
     const emailExist = await User.findOne({ email: updates.email });
     if (emailExist) {
@@ -58,6 +52,7 @@ const updateProfile = async (userId, updates) => {
     user.name = updates.name;
   }
 
+  // Si le mot de passe est modifie, le pre-save hook de bcrypt va le hacher automatiquement
   if (updates.password) {
     user.password = updates.password;
   }
