@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
+// 1. Service de connexion
 const loginUser = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) {
@@ -21,4 +22,25 @@ const loginUser = async (email, password) => {
   return { user, token };
 };
 
-module.exports = { loginUser };
+// 2. Service de creation d'utilisateur (Register)
+const registerUser = async (name, email, password) => {
+  // Verifier si l'email existe deja
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new Error('Cet email est deja utilise');
+  }
+
+  // Creer le nouvel utilisateur (le pre-save hook va hacher le mot de passe automatiquement)
+  const user = await User.create({
+    name,
+    email,
+    password
+  });
+
+  return user;
+};
+
+module.exports = {
+  loginUser,
+  registerUser
+};
