@@ -5,5 +5,7 @@ const authMiddleware = require('../middlewares/authMiddleware');
 
 router.post('/', authMiddleware, machineController.createMachine);
 router.get('/', authMiddleware, machineController.getAllMachines);
+router.get('/:id', authMiddleware, machineController.getMachineById);
+router.put('/:id', authMiddleware, machineController.updateMachine);
 
 module.exports = router;
