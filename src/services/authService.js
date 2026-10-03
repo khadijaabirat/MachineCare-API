@@ -1,7 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-// 1. Service de connexion
 const loginUser = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) {
@@ -22,7 +21,6 @@ const loginUser = async (email, password) => {
   return { user, token };
 };
 
-// 2. Service de creation d'utilisateur
 const registerUser = async (name, email, password) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -33,7 +31,6 @@ const registerUser = async (name, email, password) => {
   return user;
 };
 
-// 3. Service de mise a jour du profil
 const updateProfile = async (userId, updates) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -52,7 +49,6 @@ const updateProfile = async (userId, updates) => {
     user.name = updates.name;
   }
 
-  // Si le mot de passe est modifie, le pre-save hook de bcrypt va le hacher automatiquement
   if (updates.password) {
     user.password = updates.password;
   }

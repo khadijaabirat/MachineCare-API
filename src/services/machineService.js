@@ -1,6 +1,5 @@
 const Machine = require('../models/Machine');
 
-// ST-5.2 : Creer une machine avec verification de reference unique (409 Conflict)
 const createMachine = async (data) => {
   const existingReference = await Machine.findOne({ reference: data.reference });
   if (existingReference) {
@@ -12,7 +11,6 @@ const createMachine = async (data) => {
   return machine;
 };
 
-// ST-5.3 : Lister les machines avec filtres query atelier et etat
 const getAllMachines = async (filters = {}) => {
   const query = {};
 

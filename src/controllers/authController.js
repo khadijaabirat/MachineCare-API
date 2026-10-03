@@ -1,6 +1,5 @@
 const authService = require('../services/authService');
 
-// 1. Controleur de connexion
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -30,12 +29,10 @@ const login = async (req, res) => {
   }
 };
 
-// 2. Controleur d'inscription (Register)
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Verifier si un champ est manquant
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -43,10 +40,8 @@ const register = async (req, res) => {
       });
     }
 
-    // Appel du service pour creer l'utilisateur
     const user = await authService.registerUser(name, email, password);
 
-    // Retourne le statut 201 Created avec les infos de l'utilisateur cree
     return res.status(201).json({
       success: true,
       message: 'Utilisateur enregistré avec succès',
@@ -65,10 +60,8 @@ const register = async (req, res) => {
   }
 };
 
-// 3. Controleur de consultation du profil
 const getProfile = async (req, res) => {
   try {
-    // req.user est injecte par authMiddleware (sans le mot de passe)
     return res.status(200).json({
       success: true,
       user: {
@@ -86,12 +79,10 @@ const getProfile = async (req, res) => {
   }
 };
 
-// 4. Controleur de mise a jour du profil
 const updateProfile = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Verifier qu'au moins un champ est fourni
     if (!name && !email && !password) {
       return res.status(400).json({
         success: false,

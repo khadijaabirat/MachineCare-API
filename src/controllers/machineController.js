@@ -1,6 +1,5 @@
 const machineService = require('../services/machineService');
 
-// ST-5.2 : POST /api/machines
 const createMachine = async (req, res) => {
   try {
     const { reference, nom, atelier, localisation, etat } = req.body;
@@ -40,7 +39,6 @@ const createMachine = async (req, res) => {
   }
 };
 
-// ST-5.3 : GET /api/machines (avec ?atelier=xxx&etat=yyy)
 const getAllMachines = async (req, res) => {
   try {
     const { atelier, etat } = req.query;
