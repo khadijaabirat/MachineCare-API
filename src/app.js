@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
+const machineRoutes = require('./routes/machineRoutes');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.get('/', (req, res) => {
 
 // Routes principales de l'API
 app.use('/api/auth', authRoutes);
+app.use('/api/machines', machineRoutes);
 
 // Middleware pour les routes non trouvees (404)
 app.use((req, res, next) => {

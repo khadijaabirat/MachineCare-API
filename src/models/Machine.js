@@ -14,6 +14,10 @@ const machineSchema = new mongoose.Schema(
       required: [true, 'Le nom est obligatoire'],
       trim: true
     },
+    atelier: {
+      type: String,
+      trim: true
+    },
     localisation: {
       type: String,
       trim: true
