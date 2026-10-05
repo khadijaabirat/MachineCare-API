@@ -102,9 +102,27 @@ const updateMachine = async (req, res) => {
   }
 };
 
+const deleteMachine = async (req, res) => {
+  try {
+    const id = req.params.id;
+    await machineService.deleteMachine(id);
+    return res.status(200).json({
+      success: true,
+      message: 'Machine supprimee avec succes'
+    });
+  } catch (error) {
+    const statusCode = error.statusCode || (error.name === 'CastError' ? 404 : 400);
+    return res.status(statusCode).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   createMachine,
   getAllMachines,
   getMachine,
-  updateMachine
+  updateMachine,
+  deleteMachine
 };

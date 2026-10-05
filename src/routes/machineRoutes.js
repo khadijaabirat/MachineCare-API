@@ -7,5 +7,6 @@ router.post('/', authMiddleware, machineController.createMachine);
 router.get('/', authMiddleware, machineController.getAllMachines);
 router.get('/:id', authMiddleware, machineController.getMachine);
 router.put('/:id', authMiddleware, machineController.updateMachine);
+router.delete('/:id', authMiddleware, machineController.deleteMachine);
 
 module.exports = router;
