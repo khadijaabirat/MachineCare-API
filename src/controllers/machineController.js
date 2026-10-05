@@ -57,11 +57,13 @@ const getAllMachines = async (req, res) => {
   }
 };
 
-const getMachineById = async (req, res) => {
+const getMachine = async (req, res) => {
   try {
-    const machine = await machineService.getMachineById(req.params.id);
+    const id = req.params.id;
+    const machine = await machineService.getMachine(id);
     return res.status(200).json({
       success: true,
+      message: 'Machine recuperee avec succes',
       machine
     });
   } catch (error) {
@@ -75,26 +77,20 @@ const getMachineById = async (req, res) => {
 
 const updateMachine = async (req, res) => {
   try {
+    const id = req.params.id;
     const { reference, nom, atelier, localisation, etat } = req.body;
 
     if (!reference && !nom && !atelier && !localisation && !etat) {
       return res.status(400).json({
         success: false,
-        message: 'Fournissez au moins un champ a modifier'
+        message: 'Changer au moins un champ'
       });
     }
 
-    const machine = await machineService.updateMachine(req.params.id, {
-      reference,
-      nom,
-      atelier,
-      localisation,
-      etat
-    });
-
+    const machine = await machineService.updateMachine(id, { reference, nom, atelier, localisation, etat });
     return res.status(200).json({
       success: true,
-      message: 'Machine mise a jour avec succes',
+      message: 'La mise a jour est terminee avec succes',
       machine
     });
   } catch (error) {
@@ -109,7 +105,6 @@ const updateMachine = async (req, res) => {
 module.exports = {
   createMachine,
   getAllMachines,
-  getMachineById,
-  getMachine: getMachineById,
+  getMachine,
   updateMachine
 };

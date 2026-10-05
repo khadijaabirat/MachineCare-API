@@ -26,7 +26,7 @@ const getAllMachines = async (filters = {}) => {
   return machines;
 };
 
-const getMachineById = async (id) => {
+const getMachine = async (id) => {
   const machine = await Machine.findById(id);
   if (!machine) {
     const error = new Error('Machine introuvable');
@@ -61,6 +61,6 @@ const updateMachine = async (id, data) => {
 module.exports = {
   createMachine,
   getAllMachines,
-  getMachineById,
+  getMachine,
   updateMachine
 };

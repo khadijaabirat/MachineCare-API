@@ -13,11 +13,9 @@ app.get('/', (req, res) => {
   res.json({ message: "Bienvenue sur l'API MachineCare" });
 });
 
-// Routes principales de l'API
 app.use('/api/auth', authRoutes);
 app.use('/api/machines', machineRoutes);
 
-// Middleware pour les routes non trouvees (404)
 app.use((req, res, next) => {
   res.status(404).json({
     success: false,
@@ -25,7 +23,6 @@ app.use((req, res, next) => {
   });
 });
 
-// Gestionnaire global d'erreurs
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   console.error("Erreur détectée:", err.message);
