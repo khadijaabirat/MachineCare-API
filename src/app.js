@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const machineRoutes = require('./routes/machineRoutes');
+const incidentRoutes = require('./routes/incidentRoutes');
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/machines', machineRoutes);
+app.use('/api/incidents', incidentRoutes);
 
 app.use((req, res, next) => {
   res.status(404).json({
