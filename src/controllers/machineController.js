@@ -87,7 +87,14 @@ const updateMachine = async (req, res) => {
       });
     }
 
-    const machine = await machineService.updateMachine(id, { reference, nom, atelier, localisation, etat });
+    const updateData = {};
+    if (reference !== undefined) updateData.reference = reference;
+    if (nom !== undefined) updateData.nom = nom;
+    if (atelier !== undefined) updateData.atelier = atelier;
+    if (localisation !== undefined) updateData.localisation = localisation;
+    if (etat !== undefined) updateData.etat = etat;
+
+    const machine = await machineService.updateMachine(id, updateData);
     return res.status(200).json({
       success: true,
       message: 'La mise a jour est terminee avec succes',

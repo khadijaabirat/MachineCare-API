@@ -51,7 +51,12 @@ const updateMachine = async (id, data) => {
         }
     }
 
-    Object.assign(machine, data);
+    Object.keys(data).forEach(key => {
+        if (data[key] !== undefined) {
+            machine[key] = data[key];
+        }
+    });
+
     await machine.save();
     return machine;
 };
