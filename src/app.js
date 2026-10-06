@@ -3,6 +3,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const machineRoutes = require('./routes/machineRoutes');
 const incidentRoutes = require('./routes/incidentRoutes');
+const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
@@ -25,13 +26,6 @@ app.use((req, res, next) => {
   });
 });
 
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  console.error("Erreur détectée:", err.message);
-  res.status(statusCode).json({
-    success: false,
-    message: err.message || "Erreur interne du serveur"
-  });
-});
+app.use(errorHandler);
 
 module.exports = app;
