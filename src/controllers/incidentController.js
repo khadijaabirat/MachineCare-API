@@ -64,8 +64,37 @@ const getIncidentsByMachine = async (req, res) => {
   }
 };
 
+const updateIncident = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { statut, resolutionNote, description } = req.body;
+
+    if (!statut && !resolutionNote && !description) {
+      return res.status(400).json({
+        success: false,
+        message: 'Fournissez au moins un champ a modifier'
+      });
+    }
+
+    const incident = await incidentService.updateIncident(id, req.body);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Incident mis a jour avec succes',
+      incident
+    });
+  } catch (error) {
+    const statusCode = error.statusCode || (error.name === 'CastError' ? 404 : 400);
+    return res.status(statusCode).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 module.exports = {
   createIncident,
   getAllIncidents,
-  getIncidentsByMachine
+  getIncidentsByMachine,
+  updateIncident
 };

@@ -54,8 +54,43 @@ const getIncidentsByMachine = async (machineId) => {
   return incidents;
 };
 
+const updateIncident = async (id, data) => {
+  const incident = await Incident.findById(id);
+  if (!incident) {
+    const error = new Error('Incident introuvable');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (data.statut === 'resolu') {
+    const note = data.resolutionNote || incident.resolutionNote;
+    if (!note || !note.trim()) {
+      const error = new Error('La note de resolution est obligatoire pour passer au statut resolu');
+      error.statusCode = 400;
+      throw error;
+    }
+    incident.resolutionNote = note.trim();
+    incident.resolvedAt = new Date();
+    incident.statut = 'resolu';
+  } else if (data.statut) {
+    incident.statut = data.statut;
+  }
+
+  if (data.description) {
+    incident.description = data.description;
+  }
+
+  if (data.resolutionNote && data.statut !== 'resolu') {
+    incident.resolutionNote = data.resolutionNote.trim();
+  }
+
+  await incident.save();
+  return incident;
+};
+
 module.exports = {
   createIncident,
   getAllIncidents,
-  getIncidentsByMachine
+  getIncidentsByMachine,
+  updateIncident
 };

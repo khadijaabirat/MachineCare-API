@@ -5,5 +5,6 @@ const authMiddleware = require('../middlewares/authMiddleware');
 
 router.post('/', authMiddleware, incidentController.createIncident);
 router.get('/', authMiddleware, incidentController.getAllIncidents);
+router.put('/:id', authMiddleware, incidentController.updateIncident);
 
 module.exports = router;
