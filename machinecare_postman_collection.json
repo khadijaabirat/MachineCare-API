@@ -1,0 +1,569 @@
+{
+  "info": {
+    "name": "MachineCare API - Complete Test Collection",
+    "description": "Collection complète de test pour l'API MachineCare (Auth, Machines, Incidents, Erreurs)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "machineId",
+      "value": ""
+    },
+    {
+      "key": "machineSansIncidentId",
+      "value": ""
+    },
+    {
+      "key": "incidentId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentification",
+      "item": [
+        {
+          "name": "1.1 Login Admin (Récupérer Token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) {",
+                  "    pm.collectionVariables.set('token', res.token);",
+                  "    pm.test('Token sauvegardé avec succès', () => pm.expect(res.token).to.be.a('string'));",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"khadija@gmail.com\",\n  \"password\": \"khadija\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "1.2 Consulter son Profil (GET /api/auth/profile)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "profile"]
+            }
+          }
+        },
+        {
+          "name": "1.3 Mettre à jour son Profil (PUT /api/auth/profile)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Khadija Admin Modifié\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "profile"]
+            }
+          }
+        },
+        {
+          "name": "1.4 Créer un Utilisateur (POST /api/auth/register)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Technicien Youssef\",\n  \"email\": \"tech_test@machinecare.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Gestion des Machines",
+      "item": [
+        {
+          "name": "2.1 Créer une Machine principale",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.machine && res.machine._id) {",
+                  "    pm.collectionVariables.set('machineId', res.machine._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"MACH-001\",\n  \"nom\": \"Presse Hydraulique 50T\",\n  \"atelier\": \"Atelier A\",\n  \"localisation\": \"Zone Nord\",\n  \"etat\": \"disponible\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/machines",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "machines"]
+            }
+          }
+        },
+        {
+          "name": "2.2 Créer Machine sans Incident (pour tester delete)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.machine && res.machine._id) {",
+                  "    pm.collectionVariables.set('machineSansIncidentId', res.machine._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"MACH-TEMPORAIRE\",\n  \"nom\": \"Machine Test Suppression\",\n  \"atelier\": \"Atelier B\",\n  \"localisation\": \"Zone Sud\",\n  \"etat\": \"disponible\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/machines",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "machines"]
+            }
+          }
+        },
+        {
+          "name": "2.3 Erreur Conflit Référence Dupliquée (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reference\": \"MACH-001\",\n  \"nom\": \"Doublon Presse\",\n  \"atelier\": \"Atelier A\",\n  \"etat\": \"disponible\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/machines",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "machines"]
+            }
+          }
+        },
+        {
+          "name": "2.4 Lister toutes les Machines (GET)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/machines",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "machines"]
+            }
+          }
+        },
+        {
+          "name": "2.5 Filtrer Machines par Atelier et Etat (Query)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/machines?atelier=Atelier A&etat=disponible",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "machines"],
+              "query": [
+                {
+                  "key": "atelier",
+                  "value": "Atelier A"
+                },
+                {
+                  "key": "etat",
+                  "value": "disponible"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "2.6 Détail Machine par ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/machines/{{machineId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "machines", "{{machineId}}"]
+            }
+          }
+        },
+        {
+          "name": "2.7 Modifier Machine (PUT)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"etat\": \"en maintenance\",\n  \"localisation\": \"Zone Réparation 1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/machines/{{machineId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "machines", "{{machineId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Gestion des Incidents",
+      "item": [
+        {
+          "name": "3.1 Déclarer un Incident",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.incident && res.incident._id) {",
+                  "    pm.collectionVariables.set('incidentId', res.incident._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"machine\": \"{{machineId}}\",\n  \"description\": \"Fuite d'huile hydraulique au niveau du vérin principal\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/incidents",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "incidents"]
+            }
+          }
+        },
+        {
+          "name": "3.2 Lister tous les Incidents (avec populate)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/incidents",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "incidents"]
+            }
+          }
+        },
+        {
+          "name": "3.3 Filtrer Incidents par Statut",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/incidents?statut=ouvert",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "incidents"],
+              "query": [
+                {
+                  "key": "statut",
+                  "value": "ouvert"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "3.4 Historique des Incidents d'une Machine",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/machines/{{machineId}}/incidents",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "machines", "{{machineId}}", "incidents"]
+            }
+          }
+        },
+        {
+          "name": "3.5 Erreur Résolution Sans Note (400)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut\": \"resolu\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/incidents/{{incidentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "incidents", "{{incidentId}}"]
+            }
+          }
+        },
+        {
+          "name": "3.6 Résoudre Incident avec Note (200)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"statut\": \"resolu\",\n  \"resolutionNote\": \"Joint torique remplacé et niveau d'huile refait avec succès.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/incidents/{{incidentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "incidents", "{{incidentId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Règles de Suppression",
+      "item": [
+        {
+          "name": "4.1 Erreur Blocage Suppression si Incident Lié (409)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/machines/{{machineId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "machines", "{{machineId}}"]
+            }
+          }
+        },
+        {
+          "name": "4.2 Suppression Autorisée sans Incident (200)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/machines/{{machineSansIncidentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "machines", "{{machineSansIncidentId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Gestion Globale des Erreurs",
+      "item": [
+        {
+          "name": "5.1 Sans Token Bearer (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/machines",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "machines"]
+            }
+          }
+        },
+        {
+          "name": "5.2 ID Malformé CastError (404)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/machines/faux-id-invalide",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "machines", "faux-id-invalide"]
+            }
+          }
+        },
+        {
+          "name": "5.3 Route Inexistante (404 Not Found)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/route-inexistante-test",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "route-inexistante-test"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
