@@ -1,5 +1,5 @@
 const Machine = require('../models/Machine');
-const mongose = require('mongoose');
+const Incident = require('../models/Incident');
 
 const createMachine = async (data) => {
     const existingReference = await Machine.findOne({ reference: data.reference });
@@ -24,37 +24,36 @@ const getAllMachines = async (filters = {}) => {
     return machines;
 };
 
-const getMachine = async (req, res) => {
-    try {
-        const machine = await machineService.getMachineById(req.params.id);
-        return res.status(200).json({
-            success: true,
-            machine
-        });
-    } catch (error) {
-        const statusCode = error.statusCode || (error.name === 'CastError' ? 404 : 500);
-        return res.status(statusCode).json({
-            success: false,
-            message: error.message
-        });
+const getMachine = async (id) => {
+    const machine = await Machine.findById(id);
+    if (!machine) {
+        const error = new Error('Machine introuvable');
+        error.statusCode = 404;
+        throw error;
     }
+    return machine;
 };
 
-const updateMachine = async (req, res) => {
-    try {
-        const machine = await machineService.updateMachine(req.params.id, req.body);
-        return res.status(200).json({
-            success: true,
-            message: 'Machine mise a jour avec succes',
-            machine
-        });
-    } catch (error) {
-        const statusCode = error.statusCode || (error.code === 11000 ? 409 : (error.name === 'CastError' ? 404 : 400));
-        return res.status(statusCode).json({
-            success: false,
-            message: error.message
-        });
+const updateMachine = async (id, data) => {
+    const machine = await Machine.findById(id);
+    if (!machine) {
+        const error = new Error('Machine introuvable');
+        error.statusCode = 404;
+        throw error;
     }
+
+    if (data.reference && data.reference !== machine.reference) {
+        const existing = await Machine.findOne({ reference: data.reference });
+        if (existing) {
+            const error = new Error('Une machine avec cette reference existe deja');
+            error.statusCode = 409;
+            throw error;
+        }
+    }
+
+    Object.assign(machine, data);
+    await machine.save();
+    return machine;
 };
 
 const deleteMachine = async (id) => {
@@ -65,17 +64,7 @@ const deleteMachine = async (id) => {
         throw error;
     }
 
-    let incidentCount = 0;
-    if (mongoose.models.Incident) {
-        incidentCount = await mongoose.models.Incident.countDocuments({ machineId: id });
-    } else {
-        incidentCount = await mongoose.connection.collection('incidents').countDocuments({
-            $or: [
-                { machineId: machine._id },
-                { machine: machine._id }
-            ]
-        }).catch(() => 0);
-    }
+    const incidentCount = await Incident.countDocuments({ machine: id });
 
     if (incidentCount > 0) {
         const error = new Error('Impossible de supprimer cette machine car des signalements y sont associes');
@@ -94,3 +83,4 @@ module.exports = {
     updateMachine,
     deleteMachine
 };
+
